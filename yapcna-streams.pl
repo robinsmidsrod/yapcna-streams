@@ -31,7 +31,6 @@ foreach my $catalog_id ( @catalog_ids ) {
                     my ($dom, $index) = @_;
                     $stream->{title}   = $dom->all_text;
                     $stream->{url}     = $dom->{href};
-                    $stream->{asf_url} = convert_stream_url( $dom->{href} );
                 });
             $dom->find("td")
                 ->each(sub {
@@ -63,19 +62,34 @@ foreach my $catalog_id ( @catalog_ids ) {
 
 # Output stream information sorted by timestamp
 foreach my $stream ( sort { $a->{dt} cmp $b->{dt} } @streams ) {
-    say $stream->{url} . " "
-      . $stream->{status} . " "
-      . $stream->{dt} . " "
-      . $stream->{title} . " "
+    my $url = convert_stream_url( $stream ) || $stream->{url};
+    say $stream->{dt} . " "
+      . pad($stream->{status}, 9) . " "
+      . pad($url, 86) . " "
+      . pad($stream->{title}, 39) . " "
       . ( $stream->{duration} ? "(" . $stream->{duration} . ")" : "" )
-      . ( $stream->{status} eq 'On Air' ? $stream->{asf_url} . " " : "" )
-        if $stream->{url};
+        if $url;
 }
 
 # Convert web page stream URL to ASF URL usable by VLC or other video player
 sub convert_stream_url {
-    my ($url) = @_;
+    my ($stream) = @_;
+    my $url = $stream->{url};
     my @parts = ( $url =~ /peid=(\w{8})(\w{4})(\w{4})(\w{4})(\w+)\w\w\z/ );
     return unless @parts;
-    return "http://video.ics.uwex.edu/" . join('-', @parts);
+    if ( $stream->{status} eq 'On Air' ) {
+        return "http://video.ics.uwex.edu/" . join('-', @parts);
+    }
+    if ( $stream->{status} eq 'On Demand' ) {
+        return "http://video.ics.uwex.edu/Video/ICS/" . join('-', @parts) . ".wmv";
+    }
+    return;
+}
+
+sub pad {
+    my ($str, $len) = @_;
+    return $str unless $len;
+    my $pad_length = $len - length $str;
+    return $str if $pad_length < 1;
+    return $str . ( " " x $pad_length);
 }
