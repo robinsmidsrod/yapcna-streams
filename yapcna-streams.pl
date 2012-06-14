@@ -78,7 +78,7 @@ sub convert_stream_url {
     my @parts = ( $url =~ /peid=(\w{8})(\w{4})(\w{4})(\w{4})(\w+)\w\w\z/ );
     return unless @parts;
     if ( $stream->{status} eq 'On Air' ) {
-        return "http://video.ics.uwex.edu/" . join('-', @parts);
+        return "mmsh://video.ics.uwex.edu/" . join('-', @parts) . "?MWSWMExt=.asf";
     }
     if ( $stream->{status} eq 'On Demand' ) {
         return "http://video.ics.uwex.edu/Video/ICS/" . join('-', @parts) . ".wmv";
