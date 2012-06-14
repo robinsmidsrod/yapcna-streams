@@ -65,8 +65,8 @@ foreach my $stream ( sort { $a->{dt} cmp $b->{dt} } @streams ) {
     my $url = convert_stream_url( $stream ) || $stream->{url};
     say $stream->{dt} . " "
       . pad($stream->{status}, 9) . " "
-      . pad($url, 86) . " "
-      . pad($stream->{title}, 39) . " "
+      . pad(convert_title($stream->{title}), 26) . " "
+      . pad($url, 85) . " "
       . ( $stream->{duration} ? "(" . $stream->{duration} . ")" : "" )
         if $url;
 }
@@ -92,4 +92,14 @@ sub pad {
     my $pad_length = $len - length $str;
     return $str if $pad_length < 1;
     return $str . ( " " x $pad_length);
+}
+
+sub convert_title {
+    my ($title) = @_;
+    return "" unless defined $title;
+    return "Pyle Vandenburg Auditorium" if $title =~ /aud/i;
+    return "Pyle 313"                   if $title =~ /313/;
+    return "Pyle 325"                   if $title =~ /325/;
+    return "Lowell Dining Room"         if $title =~ /lowell/i;
+    return $title;
 }
