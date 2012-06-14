@@ -45,6 +45,7 @@ sub to_html {
                 .  qq!<td>! . $stream->{status} . qq!</td>!
                 .  qq!<td>! . YAPCNA::Streams::convert_title($stream->{title}) . qq!</td>!
                 .  qq!<td><a href="! . $url . qq!" target="_blank">Video URL</a></td>!
+                .  qq!<td><a href="! . $stream->{url} . qq!" target="_blank">Viewer URL</a></td>!
                 .  qq!<td>! . YAPCNA::Streams::convert_duration($stream->{duration}) . qq!</td></tr>!
                    if $url;
     }
